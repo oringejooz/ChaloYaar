@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Unity.Netcode;
 
-public class PlayerMovement : MonoBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     public float speed = 5f;
     public float gravity = -9.8f;
@@ -11,21 +12,29 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundDistance = 0.4f;
     public LayerMask groundMask;
-        Vector3 velocity;
+
+    Vector3 velocity;
     bool isGrounded;
 
     CharacterController controller;
 
     void Start()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
         controller = GetComponent<CharacterController>();
+
+        // Only lock cursor for the player who owns this object
+        if (IsOwner)
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
+        // IMPORTANT: Only allow the owner to control this player
+        if (!IsOwner) return;
+
         // Check if grounded
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
 
