@@ -118,7 +118,7 @@ Material:
     - Terrain_Blend_G: 0
     - Terrain_Blend_R: 0
     - Vector1_593c5cea6c4a42e993ed03ced4685732: 0.5
-    - Vector1_8651797e3e304e108dbd25f9d5a426ba: 0.892
+    - Vector1_8651797e3e304e108dbd25f9d5a426ba: 0.1
     - Vector1_a5b8b09028ce49a39f4d090894c89e22: 0.702
     - Vector1_a6983181c8dc4691ba6a28a34c4223a6: 2
     - Wind_Blast: 0.05

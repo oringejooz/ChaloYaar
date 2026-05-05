@@ -62,7 +62,7 @@ Material:
     - _BumpScale: 2
     - _QueueControl: 0
     - _QueueOffset: 0
-    - _Smoothness: 1
+    - _Smoothness: 0.1
     m_Colors:
     - _BaseWindMultipliers: {r: 0.5, g: 2, b: 1, a: 0}
     - _HueVariation: {r: 0, g: 0.9, b: 0.8255172, a: 0.1}

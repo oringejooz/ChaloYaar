@@ -38,25 +38,29 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Distance: 10
-    - _FoamAmount: 10
-    - _FoamScale: 35
-    - _FoamSpeed: 0.01
-    - _HeightFrequency: 10
-    - _NormalStrength: 10
+    - _Distance: 8
+    - _FoamAmount: 3
+    - _FoamFadeSharpness: 1
+    - _FoamOscillateSpeed: 0
+    - _FoamScale: 32
+    - _FoamScrollSpeed: 0
+    - _FoamSpeed: 0.05
+    - _FoamWaveSpeed: 0
+    - _HeightFrequency: 9.15
+    - _NormalStrength: 50
     - _QueueControl: 0
     - _QueueOffset: 0
     - _RefractionScale: 20
     - _RefractionStrength: 100
     - _WaterSpeed: 0.07
-    - _WaveHeight: 0.06
-    - _WaveSpeed: 1
+    - _WaveHeight: 0.01
+    - _WaveSpeed: 0.5
     - _smoothnesss: 1
     m_Colors:
-    - _DeepColor: {r: 0.04692758, g: 0.21356577, b: 0.6377357, a: 0.28235295}
-    - _FoamColor: {r: 0.992061, g: 1, b: 0.91132075, a: 0.58431375}
-    - _FoamTiling: {r: 20, g: 15, b: 0, a: 0}
-    - _SurfaceColor: {r: 0.3921751, g: 0.93207544, b: 0.7527051, a: 0.13333334}
+    - _DeepColor: {r: 0.2977357, g: 0.4298363, b: 0.5999999, a: 0.15686275}
+    - _FoamColor: {r: 0.99206096, g: 1, b: 0.91132075, a: 0.84705883}
+    - _FoamTiling: {r: 15, g: 10, b: 0, a: 0}
+    - _SurfaceColor: {r: 0.47450978, g: 0.9529411, b: 0.8435216, a: 0.15686275}
     - _WaterTextureTiling: {r: 10, g: 15, b: 0, a: 0}
   m_BuildTextureStacks: []
 --- !u!114 &4056120755826518199
