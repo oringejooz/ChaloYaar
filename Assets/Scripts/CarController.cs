@@ -2,14 +2,8 @@
 using UnityEngine;
 
 /// <summary>
-/// CarController.cs  –  v3 (NO WheelColliders)
-///
-/// HOW TO SET UP:
-/// 1. Attach this script to the car GameObject (the one with the Rigidbody).
-/// 2. The car needs: a Rigidbody + a normal box/mesh Collider on its body.
-/// 3. Assign all Inspector references.
-/// 4. Wheel meshes are purely visual — just assign the 4 Transform references.
-/// 5. No WheelColliders needed at all.
+/// CarController.cs – v5
+/// Added physics diagnostics to find why the van won't move.
 /// </summary>
 public class CarController : MonoBehaviour
 {
@@ -18,14 +12,12 @@ public class CarController : MonoBehaviour
     // ─────────────────────────────────────────────
 
     [Header("References")]
-    [Tooltip("The player character GameObject.")]
     public GameObject player;
-
-    [Tooltip("The steering wheel mesh Transform (rotates on local Z).")]
     public Transform steeringWheel;
-
-    [Tooltip("The door collider the player clicks to enter.")]
     public Collider doorCollider;
+
+    [Tooltip("Empty GameObject placed next to the van door — player spawns here on exit.")]
+    public Transform exitPoint;
 
     [Header("Cameras")]
     public Camera insideCamera;
@@ -50,28 +42,13 @@ public class CarController : MonoBehaviour
     // ─────────────────────────────────────────────
 
     [Header("Driving Tuning")]
-    [Tooltip("Forward / reverse force in Newtons.")]
     public float driveForce = 4000f;
-
-    [Tooltip("How strongly the car turns (degrees per second).")]
     public float turnSpeed = 60f;
-
-    [Tooltip("Drag applied while braking (Space).")]
     public float brakeDrag = 8f;
-
-    [Tooltip("Normal linear drag while driving.")]
     public float driveDrag = 0.5f;
-
-    [Tooltip("Normal angular drag (prevents spin).")]
     public float angDrag = 5f;
-
-    [Tooltip("Max speed in m/s before force is no longer added.")]
     public float maxSpeed = 20f;
-
-    [Tooltip("How close the player must be to enter (metres).")]
     public float enterDistance = 4f;
-
-    [Tooltip("Max steering wheel mesh rotation (degrees each side).")]
     public float steeringWheelMaxAngle = 180f;
 
     [Header("Audio Tuning")]
@@ -96,8 +73,11 @@ public class CarController : MonoBehaviour
     private float steerInput;
     private bool isBraking;
 
-    // Wheel spin tracking
     private float wheelRollAngle = 0f;
+    private Quaternion defaultSteeringRotation;
+    // For throttled debug logs
+    private float debugTimer = 0f;
+    private const float DEBUG_INTERVAL = 0.5f;
 
     // ─────────────────────────────────────────────
     //  UNITY LIFECYCLE
@@ -105,29 +85,30 @@ public class CarController : MonoBehaviour
 
     void Start()
     {
+        if (player == null) Debug.LogError("[CarController] ❌ 'player' not assigned!");
+        if (doorCollider == null) Debug.LogError("[CarController] ❌ 'doorCollider' not assigned!");
+        if (exitPoint == null) Debug.LogWarning("[CarController] ⚠️ 'exitPoint' not assigned.");
+        if (Camera.main == null) Debug.LogError("[CarController] ❌ No MainCamera found!");
+
         rb = GetComponent<Rigidbody>();
         if (rb == null)
         {
-            Debug.LogError("[CarController] No Rigidbody found on this GameObject!");
+            Debug.LogError("[CarController] ❌ No Rigidbody on this GameObject!");
             return;
         }
 
-        // Stable defaults
-        rb.mass = 1200f;
+        rb.mass = 1000f;
         rb.drag = driveDrag;
         rb.angularDrag = angDrag;
         rb.centerOfMass = new Vector3(0f, -0.5f, 0f);
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-
-        // Freeze rotation on X and Z so the car doesn't tumble
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
-
-        // Kill any stray velocity
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
         if (insideCamera) insideCamera.gameObject.SetActive(false);
         if (outsideCamera) outsideCamera.gameObject.SetActive(false);
+        if(steeringWheel) defaultSteeringRotation = steeringWheel.localRotation;
 
         if (engineAudioSource)
         {
@@ -135,6 +116,30 @@ public class CarController : MonoBehaviour
             engineAudioSource.playOnAwake = false;
             engineAudioSource.Stop();
         }
+
+        //// ── Physics diagnostics at start ──────────────────────────────────────────
+        //Debug.Log("[CarController] ── PHYSICS SETUP REPORT ──────────────────");
+        //Debug.Log("[CarController] Van position Y: " + transform.position.y);
+        //Debug.Log("[CarController] Rigidbody isKinematic: " + rb.isKinematic);
+        //Debug.Log("[CarController] Rigidbody useGravity: " + rb.useGravity);
+        //Debug.Log("[CarController] Rigidbody mass: " + rb.mass);
+        //Debug.Log("[CarController] Rigidbody drag: " + rb.drag);
+        //Debug.Log("[CarController] Rigidbody constraints: " + rb.constraints);
+
+        //Collider[] cols = GetComponentsInChildren<Collider>();
+        //Debug.Log("[CarController] Total colliders in hierarchy: " + cols.Length);
+        //foreach (var c in cols)
+        //    Debug.Log("  → Collider: " + c.name + " | type: " + c.GetType().Name
+        //        + " | isTrigger: " + c.isTrigger
+        //        + " | enabled: " + c.enabled);
+
+        //Rigidbody[] rbs = GetComponentsInChildren<Rigidbody>();
+        //Debug.Log("[CarController] Total Rigidbodies in hierarchy: " + rbs.Length);
+        //foreach (var r in rbs)
+        //    Debug.Log("  → Rigidbody on: " + r.gameObject.name
+        //        + " | isKinematic: " + r.isKinematic);
+
+        //Debug.Log("[CarController] ────────────────────────────────────────────");
     }
 
     void Update()
@@ -157,7 +162,23 @@ public class CarController : MonoBehaviour
     void FixedUpdate()
     {
         if (isInCar && engineStarted)
+        {
             DriveCar();
+
+            // ── Throttled driving diagnostics ─────────────────────────────────────
+            debugTimer += Time.fixedDeltaTime;
+            if (debugTimer >= DEBUG_INTERVAL)
+            {
+                debugTimer = 0f;
+                float forwardSpeed = Vector3.Dot(rb.velocity, transform.forward);
+                Debug.Log("[CarController] 🚗 throttle=" + throttleInput.ToString("F2")
+                    + " | speed=" + forwardSpeed.ToString("F2")
+                    + " | velocity=" + rb.velocity.magnitude.ToString("F2")
+                    + " | pos=" + transform.position
+                    + " | isKinematic=" + rb.isKinematic
+                    + " | drag=" + rb.drag.ToString("F2"));
+            }
+        }
 
         UpdateWheelVisuals();
     }
@@ -170,16 +191,23 @@ public class CarController : MonoBehaviour
     {
         if (!isInCar && Input.GetMouseButtonDown(0))
         {
+            if (Camera.main == null) return;
+
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out RaycastHit hit))
+            if (!Physics.Raycast(ray, out RaycastHit hit)) return;
+
+            Debug.Log("[CarController] 🔍 Raycast hit: " + hit.collider.name);
+            if (hit.collider != doorCollider) return;
+
+            float dist = Vector3.Distance(player.transform.position, transform.position);
+            Debug.Log("[CarController] 📏 Distance: " + dist.ToString("F2") + "m (limit: " + enterDistance + "m)");
+            if (dist > enterDistance)
             {
-                if (hit.collider == doorCollider)
-                {
-                    float dist = Vector3.Distance(player.transform.position, transform.position);
-                    if (dist <= enterDistance)
-                        EnterCar();
-                }
+                Debug.Log("[CarController] ⛔ Too far.");
+                return;
             }
+
+            EnterCar();
         }
 
         if (isInCar && Input.GetKeyDown(KeyCode.E))
@@ -189,8 +217,23 @@ public class CarController : MonoBehaviour
     void EnterCar()
     {
         isInCar = true;
-        if (Camera.main) Camera.main.gameObject.SetActive(false);
-        if (insideCamera) insideCamera.gameObject.SetActive(true);
+        Debug.Log("[CarController] 🚗 EnterCar()");
+
+        player.SetActive(false);
+
+        if (insideCamera != null)
+            insideCamera.gameObject.SetActive(true);
+        else
+            Debug.LogWarning("[CarController] ⚠️ insideCamera not assigned.");
+
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = false;
+
+        // Log physics state right as we enter
+        Debug.Log("[CarController] On enter — rb.isKinematic: " + rb.isKinematic
+            + " | useGravity: " + rb.useGravity
+            + " | drag: " + rb.drag);
+
         StartCoroutine(StartEngine());
     }
 
@@ -202,22 +245,35 @@ public class CarController : MonoBehaviour
 
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-        rb.drag = 10f; // high drag = parked
+        rb.drag = 10f;
 
         if (engineAudioSource) engineAudioSource.Stop();
 
+        if (player != null)
+        {
+            Transform spawnAt = exitPoint != null ? exitPoint : transform;
+            player.transform.position = spawnAt.position;
+            player.transform.rotation = spawnAt.rotation;
+            player.SetActive(true);
+        }
+
         if (insideCamera) insideCamera.gameObject.SetActive(false);
         if (outsideCamera) outsideCamera.gameObject.SetActive(false);
-        if (Camera.main) Camera.main.gameObject.SetActive(true);
+
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
+        Debug.Log("[CarController] 🚪 ExitCar() complete.");
     }
 
     // ─────────────────────────────────────────────
     //  ENGINE START
     // ─────────────────────────────────────────────
 
-    System.Collections.IEnumerator StartEngine()
+    IEnumerator StartEngine()
     {
         engineState = EngineState.Starting;
+        Debug.Log("[CarController] 🔑 Engine starting...");
 
         if (sfxAudioSource && startClip)
         {
@@ -233,6 +289,11 @@ public class CarController : MonoBehaviour
         engineState = EngineState.Idle;
         rb.drag = driveDrag;
         PlayEngineClip(idleClip, idlePitch);
+
+        Debug.Log("[CarController] ✅ Engine ready — W/S drive, A/D steer, Space brake, E exit.");
+        //Debug.Log("[CarController] Post-start rb state — drag: " + rb.drag
+        //    + " | isKinematic: " + rb.isKinematic
+        //    + " | velocity: " + rb.velocity);
     }
 
     // ─────────────────────────────────────────────
@@ -247,50 +308,53 @@ public class CarController : MonoBehaviour
     }
 
     // ─────────────────────────────────────────────
-    //  CAR PHYSICS  (force-based, no WheelColliders)
+    //  CAR PHYSICS
     // ─────────────────────────────────────────────
 
     void DriveCar()
     {
-        // ── Braking ──────────────────────────────────────────────────────
         rb.drag = isBraking ? brakeDrag : driveDrag;
 
-        // ── Forward / backward force ──────────────────────────────────────
         float speed = Vector3.Dot(rb.velocity, transform.forward);
 
         if (!isBraking && Mathf.Abs(throttleInput) > 0.01f)
         {
-            // Only add force if under max speed
-            if (Mathf.Abs(speed) < maxSpeed)
+            bool pressingBack = throttleInput < 0f;
+
+            if (pressingBack && speed > 0.3f)
             {
+                // Moving forward + pressing S = brake, not reverse
+                rb.drag = brakeDrag;
+            }
+            else if (Mathf.Abs(speed) < maxSpeed)
+            {
+                // Either pressing W, or pressing S while already stopped/reversing
                 Vector3 force = transform.forward * throttleInput * driveForce;
                 rb.AddForce(force, ForceMode.Force);
             }
         }
 
-        // ── Steering (only when moving) ───────────────────────────────────
         if (Mathf.Abs(speed) > 0.5f)
         {
-            // Steer in the direction of travel (flips when reversing)
             float steerDir = Mathf.Sign(speed);
             float turnAmount = steerInput * turnSpeed * steerDir * Time.fixedDeltaTime;
             rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, turnAmount, 0f));
         }
 
-        // ── Steering wheel mesh ───────────────────────────────────────────
         if (steeringWheel)
         {
-            float targetAngle = -steerInput * steeringWheelMaxAngle;
+            float targetAngle = steerInput * steeringWheelMaxAngle;
+            Quaternion targetRotation = defaultSteeringRotation * Quaternion.Euler(0f, targetAngle, 0f);
             steeringWheel.localRotation = Quaternion.Lerp(
                 steeringWheel.localRotation,
-                Quaternion.Euler(0f, 0f, targetAngle),
+                targetRotation,
                 Time.fixedDeltaTime * 8f
             );
         }
     }
 
     // ─────────────────────────────────────────────
-    //  WHEEL VISUALS  (spin + steer, purely cosmetic)
+    //  WHEEL VISUALS
     // ─────────────────────────────────────────────
 
     void UpdateWheelVisuals()
@@ -299,8 +363,7 @@ public class CarController : MonoBehaviour
 
         float speed = rb != null ? Vector3.Dot(rb.velocity, transform.forward) : 0f;
 
-        // Accumulate roll angle based on speed
-        float wheelRadius = 0.35f;  // tweak to match your tyre size
+        float wheelRadius = 0.35f;
         wheelRollAngle += (speed / wheelRadius) * Mathf.Rad2Deg * Time.fixedDeltaTime;
         wheelRollAngle = Mathf.Repeat(wheelRollAngle, 360f);
 
@@ -312,13 +375,17 @@ public class CarController : MonoBehaviour
 
             if (i < 2)
             {
-                // Front wheels: roll + steer
-                wheelMeshes[i].localRotation = Quaternion.Euler(wheelRollAngle, steerAngle, 0f);
+                // Front wheels: spin (X) + steer (Y) + base offset (Z)
+                Quaternion steerRot = Quaternion.Euler(0f, steerAngle, -90f);
+                Quaternion spinRot = Quaternion.Euler(0f, wheelRollAngle, 0f);
+                wheelMeshes[i].localRotation = steerRot * spinRot;
             }
             else
             {
-                // Rear wheels: roll only
-                wheelMeshes[i].localRotation = Quaternion.Euler(wheelRollAngle, 0f, 0f);
+                // Rear wheels: spin (X) + base offset (Z)
+                Quaternion baseOffsetRot = Quaternion.Euler(0f, 0f, -90f);
+                Quaternion spinRot = Quaternion.Euler(0f, wheelRollAngle, 0f);
+                wheelMeshes[i].localRotation = baseOffsetRot * spinRot;
             }
         }
     }
@@ -329,18 +396,23 @@ public class CarController : MonoBehaviour
 
     void UpdateEngineSound()
     {
+        float speed = Vector3.Dot(rb.velocity, transform.forward);
         bool isMovingInput = Mathf.Abs(throttleInput) > 0.05f;
-        bool isReversing = throttleInput < -0.05f;
+
+        // Truly reversing = pressing S AND the van is already stopped or going backward
+        bool isActuallyReversing = throttleInput < -0.05f && speed <= 0.3f;
+        // Braking = pressing S while still rolling forward
+        bool isBrakingWithS = throttleInput < -0.05f && speed > 0.3f;
 
         switch (engineState)
         {
             case EngineState.Idle:
-                if (isReversing)
+                if (isActuallyReversing)
                 {
                     engineState = EngineState.Reversing;
                     PlayEngineClip(reverseClip, idlePitch);
                 }
-                else if (isMovingInput)
+                else if (isMovingInput && !isBrakingWithS)
                 {
                     idleTimer += Time.deltaTime;
                     if (idleTimer >= idleToRunDelay)
@@ -360,13 +432,14 @@ public class CarController : MonoBehaviour
                 break;
 
             case EngineState.Running:
-                if (isReversing)
+                if (isActuallyReversing)
                 {
                     engineState = EngineState.Reversing;
                     PlayEngineClip(reverseClip, idlePitch);
                 }
-                else if (!isMovingInput)
+                else if (!isMovingInput || isBrakingWithS)
                 {
+                    // Braking with S sounds like idle, not running
                     engineState = EngineState.Idle;
                     PlayEngineClip(idleClip, idlePitch);
                 }
@@ -380,7 +453,7 @@ public class CarController : MonoBehaviour
                 break;
 
             case EngineState.Reversing:
-                if (!isReversing)
+                if (!isActuallyReversing)
                 {
                     engineState = EngineState.Idle;
                     PlayEngineClip(idleClip, idlePitch);

@@ -11,11 +11,11 @@ Material:
   m_Shader: {fileID: -6465566751694194690, guid: 49f1173efda15c24abd9ee23c658aeca,
     type: 3}
   m_Parent: {fileID: 2100000, guid: dde0b1a07ce245f4c9d5d7d4388ebd05, type: 2}
-  m_ModifiedSerializedProperties: 0
+  m_ModifiedSerializedProperties: 4
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
-  m_EnableInstancingVariants: 0
+  m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
   stringTagMap: {}

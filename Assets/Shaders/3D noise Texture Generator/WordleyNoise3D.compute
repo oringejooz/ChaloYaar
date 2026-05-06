@@ -1,0 +1,53 @@
+#pragma kernel GenerateWorley
+
+RWTexture3D<float4> Result;
+
+int _Size;
+float3 _FeaturePoints[27]; // not used directly, generated per cell
+int _Seed;
+
+// Simple hash function
+float3 hash3(float3 p, int seed)
+{
+    p = float3(dot(p, float3(127.1, 311.7, 74.7)),
+               dot(p, float3(269.5, 183.3, 246.1)),
+               dot(p, float3(113.5, 271.9, 124.6)));
+    return frac(sin(p + seed) * 43758.5453123);
+}
+
+float worley(float3 uv, float frequency)
+{
+    float3 id = floor(uv * frequency);
+    float3 fd = frac(uv * frequency);
+
+    float minDist = 1.0;
+
+    // Check all 27 neighboring cells (3x3x3)
+    for (int z = -1; z <= 1; z++)
+        for (int y = -1; y <= 1; y++)
+            for (int x = -1; x <= 1; x++)
+            {
+                float3 neighbor = float3(x, y, z);
+                float3 featurePoint = hash3(id + neighbor, _Seed);
+                float3 diff = neighbor + featurePoint - fd;
+                float dist = length(diff);
+                minDist = min(minDist, dist);
+            }
+
+    return minDist;
+}
+
+[numthreads(8, 8, 8)]
+void GenerateWorley(uint3 id : SV_DispatchThreadID)
+{
+    float3 uv = float3(id) / float(_Size);
+
+    // Four layers at increasing frequencies, stored in RGBA
+    float r = worley(uv, 2.0);
+    float g = worley(uv, 4.0);
+    float b = worley(uv, 8.0);
+    float a = worley(uv, 16.0);
+
+    // Invert so dense areas are bright
+    Result[id] = float4(1.0 - r, 1.0 - g, 1.0 - b, 1.0 - a);
+}
