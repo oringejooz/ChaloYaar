@@ -142,6 +142,8 @@ GameObject:
   - component: {fileID: 4177797267965489233}
   - component: {fileID: 4761332911294746097}
   - component: {fileID: 6929752333314694451}
+  - component: {fileID: 9131978451976149947}
+  - component: {fileID: 7820028529990806512}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -321,6 +323,45 @@ MonoBehaviour:
   apertureFar: 18
   minFocusDistance: 0.5
   drawDebugRay: 1
+--- !u!114 &9131978451976149947
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7460221995699061918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec3759f9c3d4d714f8bbd468e7fe6488, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  raycastDistance: 3
+  interactableLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  playerController: {fileID: 0}
+--- !u!114 &7820028529990806512
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7460221995699061918}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bbd621ea87d71740a7fe88d4c2faf72, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  photoRange: 20
+  photoFOV: 40
+  animalLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  shootCooldown: 1.5
+  viewfinderUI: {fileID: 0}
+  audioSource: {fileID: 0}
+  shutterClip: {fileID: 0}
+  noSubjectClip: {fileID: 0}
 --- !u!1 &7772674344416185497
 GameObject:
   m_ObjectHideFlags: 0
@@ -594,11 +635,31 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
         type: 3}
       insertIndex: -1
+      addedObject: {fileID: 6375606096174982697}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
+        type: 3}
+      insertIndex: -1
       addedObject: {fileID: 2170424545247683212}
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
         type: 3}
       insertIndex: -1
-      addedObject: {fileID: 6375606096174982697}
+      addedObject: {fileID: 6715252283068028788}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5513740729462552863}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 604959648997911191}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2057497814562818982}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: a576e9bf613239b469f6e028e048f292,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2026723838424550430}
   m_SourcePrefab: {fileID: 100100000, guid: a576e9bf613239b469f6e028e048f292, type: 3}
 --- !u!4 &990087527474422817 stripped
 Transform:
@@ -665,6 +726,29 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.8, z: 0}
+--- !u!136 &6375606096174982697
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7769526275398900561}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.2
+  m_Height: 1.6
+  m_Direction: 1
+  m_Center: {x: 0, y: 0.8, z: 0}
 --- !u!114 &2170424545247683212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -689,26 +773,157 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   animator: {fileID: 2399111326593185101}
---- !u!136 &6375606096174982697
-CapsuleCollider:
+  audioSource: {fileID: 0}
+  masterVolume: 1
+  walkClip: {fileID: 0}
+  walkVolume: 1
+  walkPitch: 1
+  runClip: {fileID: 0}
+  runVolume: 1
+  runPitch: 1
+  waterWalkClip: {fileID: 0}
+  waterWalkVolume: 1
+  waterWalkPitch: 1
+  waterTag: Water
+  waterWalkSpeed: 2
+  waterAnimatorSpeed: 0.6
+--- !u!114 &6715252283068028788
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7769526275398900561}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.2
-  m_Height: 1.6
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.8, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86ef5b9376a549f4daf128e8785ab1c7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startHunger: 80
+  startThirst: 80
+  startStamina: 100
+  startDrowsiness: 0
+  hungerDecayRate: 0.05
+  thirstDecayRate: 0.07
+  staminaSprintDrain: 0.8
+  staminaRecoverRate: 0.3
+  drowsinessGainRate: 0.02
+  drowsinessDecayRate: 2
+  hungerPenaltyThreshold: 20
+  thirstPenaltyThreshold: 15
+  drowsinessPenaltyThreshold: 75
+  _hunger: 0
+  _thirst: 0
+  _stamina: 0
+  _drowsiness: 0
+--- !u!114 &5513740729462552863
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7769526275398900561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925e78ed699b5054ba1df62d026ed40d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hungrySpeedMult: 0.7
+  drowsySpeedMult: 0.6
+  blockSprintOnExhaustion: 1
+  flatulenceClips: []
+  sfxSource: {fileID: 0}
+  flatulenceCooldown: 8
+  thirstVignetteCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  drowsinessBlurCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 1
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 1
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &604959648997911191
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7769526275398900561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7493fe8d98109fc40bbe9e859dae6508, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterData: {fileID: 0}
+--- !u!114 &2057497814562818982
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7769526275398900561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2543851684c1d9f4584132537530010a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Stats: {fileID: 0}
+  Needs: {fileID: 0}
+  Class: {fileID: 0}
+  Movement: {fileID: 0}
+  Inventory: {fileID: 0}
+  interactionSystem: {fileID: 0}
+--- !u!114 &2026723838424550430
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7769526275398900561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 08465034722e7a842b27afd83aa26827, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxSlots: 6
+  startingItems: []

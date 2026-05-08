@@ -29,7 +29,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _DensityMultiplier: 0.001
+    - _DensityMultiplier: 0.003
     - _DensityThreshold: 0.5
     - _LightScattering: 0
     - _MaxDistance: 100
@@ -38,7 +38,7 @@ Material:
     - _StepSize: 1
     - _WindSpeed: 0.1
     m_Colors:
-    - _Color: {r: 0.6860451, g: 0.6354788, b: 0.79622644, a: 1}
+    - _Color: {r: 0.32429856, g: 0.2552865, b: 0.381132, a: 1}
     - _LightContribution: {r: 1, g: 1, b: 1, a: 1}
     - _WindDirection: {r: -1, g: 0, b: 1, a: 0}
   m_BuildTextureStacks: []

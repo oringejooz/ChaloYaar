@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40681e553e86fee43a2b15cb878bc527, type: 3}
+  m_Name: Apple
+  m_EditorClassIdentifier: 
+  itemName: Apple
+  description: 
+  icon: {fileID: 21300000, guid: 16a9bc2f6b2931c4ba896673b7791ece, type: 3}
+  worldPrefab: {fileID: 455161463216731422, guid: 2ee491e29606bd14b9deefdb0d425cb6,
+    type: 3}
+  itemType: 0
+  isStackable: 1
+  maxStack: 5
+  buyPrice: 10
+  sellPrice: 5
+  effect:
+    hungerDelta: 8
+    thirstDelta: 5
+    staminaDelta: 5
+    drowsinessDelta: 0
+    healthDelta: 0
+    causesFlatulence: 0
+    causesDrowsinessAfterDelay: 0
+    delayedDrowsinessAmount: 0
+  consumeAnimTrigger: Eat
+  consumeDelay: 1

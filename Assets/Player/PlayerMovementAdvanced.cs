@@ -128,6 +128,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private bool _hasInput;
     private bool _isSprinting;
 
+    public bool IsSprinting => _isSprinting;
+
     // Water state
     private bool _isInWater;
 
@@ -139,6 +141,8 @@ public class PlayerMovementAdvanced : MonoBehaviour
     private enum FootstepState { None, Walk, Run, WaterWalk }
     private FootstepState _currentFootstepState = FootstepState.None;
 
+    private PlayerStats _stats;
+
     // Animator hashes — avoids per-frame string allocation
     private static readonly int HashIsWalking = Animator.StringToHash("IsWalking");
     private static readonly int HashIsRunning = Animator.StringToHash("IsRunning");
@@ -148,6 +152,7 @@ public class PlayerMovementAdvanced : MonoBehaviour
     void Start()
     {
         _controller = GetComponent<CharacterController>();
+        _stats = GetComponent<PlayerStats>();
 
         if (animator == null)
             Debug.LogWarning("[PlayerMovementAdvanced] No Animator assigned – animations will not play.");
@@ -184,9 +189,11 @@ public class PlayerMovementAdvanced : MonoBehaviour
         Vector3 inputDir = (transform.right * x + transform.forward * z).normalized;
 
         _hasInput = inputDir.magnitude > 0.05f;
-
-        // Sprint is disabled while in water
         _isSprinting = _hasInput && !_isInWater && Input.GetKey(KeyCode.LeftShift);
+
+        // ← ADD THIS: sync sprint state to PlayerStats so stamina actually drains
+        var stats = GetComponent<PlayerStats>();
+        if (stats != null) stats.IsSprinting = _isSprinting;
 
         float targetSpeed = _hasInput
             ? (_isSprinting ? sprintSpeed : (_isInWater ? waterWalkSpeed : walkSpeed))

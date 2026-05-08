@@ -9,11 +9,11 @@ TagManager:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Animal
   - Water
   - UI
   - Ground
-  - 
+  - Interactable
   - 
   - 
   - 
