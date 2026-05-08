@@ -79,3 +79,5 @@ crashlytics-build.properties
 !.vscode/extensions.json
 
 ChaloYaar.slnx
+Assets/Scenes/TerrainSP/LightingData.asset
+Assets/Scenes/TerrainSP/LightingData.asset.meta
