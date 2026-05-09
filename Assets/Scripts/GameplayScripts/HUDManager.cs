@@ -92,6 +92,8 @@ public class HUDManager : MonoBehaviour
             vanHub.water.OnChanged += v => SetSlider(waterBar, v);
             vanHub.trash.OnChanged += v => SetSlider(trashBar, v);
             vanHub.OnSystemAlert += ShowAlert;
+
+            RefreshVanUI(); // <-- add this
         }
 
         RefreshAllStats();
@@ -170,6 +172,15 @@ public class HUDManager : MonoBehaviour
             textElement.color = criticalColor;
     }
 
+    void RefreshVanUI()
+    {
+        SetSlider(fuelBar, vanHub.fuel.Normalized);
+        SetSlider(vanHealthBar, vanHub.health.Normalized);
+        SetSlider(gasBar, vanHub.gas.Normalized);
+        SetSlider(waterBar, vanHub.water.Normalized);
+        SetSlider(trashBar, vanHub.trash.Normalized);
+    }
+
     void RefreshAllStats()
     {
         if (_stats == null) return;
@@ -183,7 +194,7 @@ public class HUDManager : MonoBehaviour
     // ── Player Death ──────────────────────────────────────────────────────────
     void HandlePlayerDeath()
     {
-        ShowAlert("☠️ You have died! Game Over.");
+        ShowAlert("You have died! Game Over.");
         // TODO: Disable player movement, show death screen, offer respawn
     }
 
@@ -193,7 +204,7 @@ public class HUDManager : MonoBehaviour
     void RefreshMoney()
     {
         if (moneyText == null || MoneySystem.Instance == null) return;
-        moneyText.text = $"₹ {MoneySystem.Instance.Balance:N0}";
+        moneyText.text = $"{MoneySystem.Instance.Balance:N0}";
     }
 
     // ── Interaction Prompt ────────────────────────────────────────────────────

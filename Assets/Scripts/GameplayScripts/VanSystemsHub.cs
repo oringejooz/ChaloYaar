@@ -137,13 +137,6 @@ public class VanSystemsHub : MonoBehaviour
         gas.Init();
         water.Init();
         trash.Init();
-
-        // Force UI update on start — ADD THESE 5 LINES:
-        fuel.OnChanged?.Invoke(fuel.Normalized);
-        health.OnChanged?.Invoke(health.Normalized);
-        gas.OnChanged?.Invoke(gas.Normalized);
-        water.OnChanged?.Invoke(water.Normalized);
-        trash.OnChanged?.Invoke(trash.Normalized);
     }
 
     void Update()

@@ -96,6 +96,7 @@ public class Inventory : MonoBehaviour
         if (remaining < quantity)
         {
             OnItemAdded?.Invoke(item);
+            ObjectiveSystem.Instance?.NotifyItemCollected(item.itemName);
             OnInventoryChanged?.Invoke();
         }
 
@@ -144,6 +145,7 @@ public class Inventory : MonoBehaviour
             return;
         }
 
+        ObjectiveSystem.Instance?.NotifyItemConsumed(item.itemName);
         if (!RemoveItem(item, 1)) return;
 
         StartCoroutine(ApplyConsumeDelay(item, player));

@@ -87,19 +87,19 @@ public class LaptopInteractable : Interactable
         // Show summary
         ShowSellSummary(soldPhotos, totalEarned);
 
-        Debug.Log($"[Laptop] Sold {soldPhotos.Count} photo types for ₹{totalEarned}");
+        Debug.Log($"[Laptop] Sold {soldPhotos.Count} photo types for {totalEarned}");
     }
 
     private void ShowSellSummary(List<PhotoSaleInfo> soldPhotos, int total)
     {
         if (sellSummaryPanel != null && summaryText != null)
         {
-            string summary = "<b>📸 Photos Sold!</b>\n\n";
+            string summary = "<b>Photos Sold!</b>\n\n";
             foreach (var photo in soldPhotos)
             {
-                summary += $"{photo.itemName} x{photo.quantity} = ₹{photo.totalValue}\n";
+                summary += $"{photo.itemName} x{photo.quantity} = {photo.totalValue}\n";
             }
-            summary += $"\n<b>Total: ₹{total}</b>";
+            summary += $"\n<b>Total: {total}</b>";
 
             summaryText.text = summary;
             sellSummaryPanel.SetActive(true);
@@ -112,7 +112,7 @@ public class LaptopInteractable : Interactable
             // Fallback to HUD alert if no panel assigned
             HUDManager hud = FindObjectOfType<HUDManager>();
             if (hud != null)
-                hud.ShowAlert($"📸 Sold photos! +₹{total}");
+                hud.ShowAlert($"Sold photos! +{total}");
         }
     }
 

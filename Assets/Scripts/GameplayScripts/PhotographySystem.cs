@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class PhotographySystem : MonoBehaviour
 {
@@ -18,10 +19,34 @@ public class PhotographySystem : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip shutterClip;
     public AudioClip noSubjectClip;
+    public AudioClip zoomInClip;
+    public AudioClip zoomOutClip;
+    public AudioClip cameraRaiseClip;
+    public AudioClip cameraLowerClip;
+
+
+    [Header("Photo Stats UI")]
+    [Tooltip("TMP text element that shows photo results and alerts")]
+    public TextMeshProUGUI photoStatsText;
+    [Tooltip("How long the photo stats message stays on screen")]
+    public float statDisplayDuration = 3f;
+
+    [Header("Zoom")]
+    public float defaultFOV = 60f;
+    public float zoomedFOV = 25f;
+    [Tooltip("How fast the camera lerps between FOVs")]
+    public float zoomSpeed = 8f;
+
+    [Header("Spawn Points (for Respawnable Animals)")]
+    [Tooltip("Empty GameObjects used as potential relocation points")]
+    public Transform[] animalSpawnPoints;
 
     public bool IsCameraActive { get; private set; }
+    public bool IsZoomed { get; private set; }
 
     private float _shootTimer;
+    private float _statDisplayTimer;
+    private float _targetFOV;
     private PlayerController _player;
     private Camera _cam;
 
@@ -31,24 +56,53 @@ public class PhotographySystem : MonoBehaviour
     {
         _player = GetComponentInParent<PlayerController>();
         _cam = GetComponent<Camera>();
+        _targetFOV = defaultFOV;
 
         if (cameraCanvas != null) cameraCanvas.SetActive(false);
+        if (photoStatsText != null) photoStatsText.gameObject.SetActive(false);
     }
 
     void Update()
     {
         _shootTimer -= Time.deltaTime;
 
+        // Hide photo stats text after duration
+        if (_statDisplayTimer > 0f)
+        {
+            _statDisplayTimer -= Time.deltaTime;
+            if (_statDisplayTimer <= 0f && photoStatsText != null)
+                photoStatsText.gameObject.SetActive(false);
+        }
+
         if (Input.GetKeyDown(KeyCode.F))
         {
-            if (IsCameraActive)
-                LowerCamera();
-            else
-                RaiseCamera();
+            if (IsCameraActive) LowerCamera();
+            else RaiseCamera();
         }
 
         if (IsCameraActive)
         {
+            // Zoom toggle on right click
+            if (Input.GetMouseButtonDown(1))
+            {
+                if (!IsZoomed)
+                {
+                    IsZoomed = true;
+                    _targetFOV = zoomedFOV;
+                    audioSource?.PlayOneShot(zoomInClip);
+                }
+                else
+                {
+                    IsZoomed = false;
+                    _targetFOV = defaultFOV;
+                    audioSource?.PlayOneShot(zoomOutClip);
+                }
+            }
+
+            // Smoothly lerp camera FOV toward target
+            if (_cam != null)
+                _cam.fieldOfView = Mathf.Lerp(_cam.fieldOfView, _targetFOV, Time.deltaTime * zoomSpeed);
+
             if (Input.GetButtonDown("Fire1") && _shootTimer <= 0f)
                 TryTakePhoto();
         }
@@ -57,18 +111,35 @@ public class PhotographySystem : MonoBehaviour
     public void RaiseCamera()
     {
         IsCameraActive = true;
+        _targetFOV = defaultFOV;
+        IsZoomed = false;
+        if (_cam != null) _cam.fieldOfView = defaultFOV;
         if (playerCanvas != null) playerCanvas.SetActive(false);
         if (cameraCanvas != null) cameraCanvas.SetActive(true);
-        Debug.Log("[Photography] Camera raised");
+        audioSource?.PlayOneShot(cameraRaiseClip);  // ← add
     }
 
     public void LowerCamera()
     {
         IsCameraActive = false;
+        IsZoomed = false;
+        if (_cam != null) _cam.fieldOfView = defaultFOV;
         if (playerCanvas != null) playerCanvas.SetActive(true);
         if (cameraCanvas != null) cameraCanvas.SetActive(false);
-        Debug.Log("[Photography] Camera lowered");
+        audioSource?.PlayOneShot(cameraLowerClip);  // ← add
     }
+
+    // ── Display Helpers ───────────────────────────────────────────────────────
+
+    void ShowPhotoStat(string message)
+    {
+        if (photoStatsText == null) return;
+        photoStatsText.text = message;
+        photoStatsText.gameObject.SetActive(true);
+        _statDisplayTimer = statDisplayDuration;
+    }
+
+    // ── Photo Logic ───────────────────────────────────────────────────────────
 
     void TryTakePhoto()
     {
@@ -99,7 +170,7 @@ public class PhotographySystem : MonoBehaviour
         if (bestAnimal == null)
         {
             audioSource?.PlayOneShot(noSubjectClip);
-            Debug.Log("[Photography] No animal in frame.");
+            ShowPhotoStat("No animal in frame.");
             return;
         }
 
@@ -123,11 +194,60 @@ public class PhotographySystem : MonoBehaviour
             timestamp = Time.time
         };
 
-        _player?.Inventory.AddItem(bestAnimal.photoItem, 1);
+        if (bestAnimal.photoItem != null)
+            _player?.Inventory.AddItem(bestAnimal.photoItem, 1);
+        else
+            Debug.LogWarning($"[Photography] {bestAnimal.animalName} has no photoItem assigned!");
+
         OnPhotoTaken?.Invoke(record);
+        ObjectiveSystem.Instance?.NotifyPhotoTaken(bestAnimal.animalName);
         audioSource?.PlayOneShot(shutterClip);
 
-        Debug.Log($"[Photography] Shot {bestAnimal.animalName} | quality {quality:P0} | value ₹{sellValue}");
+        bestAnimal.photosTaken++;
+        int remaining = bestAnimal.maxPhotos - bestAnimal.photosTaken;
+
+        string qualityLabel = quality switch
+        {
+            >= 0.9f => "Perfect!",
+            >= 0.75f => "Excellent",
+            >= 0.55f => "Good",
+            >= 0.35f => "Ok",
+            _ => "Bad"
+        };
+
+        string statsMessage =
+            $"{bestAnimal.animalName}\n" +
+            $"Rarity: {bestAnimal.rarity}\n" +
+            $"Quality: {qualityLabel}\n" +
+            $"Value: ₹{sellValue}\n" +
+            $"Photos left: {Mathf.Max(remaining, 0)}";
+
+        ShowPhotoStat(statsMessage);
+
+        if (bestAnimal.photosTaken >= bestAnimal.maxPhotos)
+        {
+            if (bestAnimal.isRespawnable && animalSpawnPoints != null && animalSpawnPoints.Length > 0)
+            {
+                Transform newSpawn = GetRandomSpawnPoint(bestAnimal.transform.position);
+                bestAnimal.transform.position = newSpawn.position;
+                bestAnimal.photosTaken = 0;
+            }
+            else
+            {
+                Destroy(bestAnimal.gameObject);
+            }
+        }
+    }
+
+    Transform GetRandomSpawnPoint(Vector3 currentPos)
+    {
+        Transform chosen = animalSpawnPoints[Random.Range(0, animalSpawnPoints.Length)];
+        for (int i = 0; i < 5; i++)
+        {
+            Transform t = animalSpawnPoints[Random.Range(0, animalSpawnPoints.Length)];
+            if (Vector3.Distance(t.position, currentPos) > 2f) { chosen = t; break; }
+        }
+        return chosen;
     }
 }
 

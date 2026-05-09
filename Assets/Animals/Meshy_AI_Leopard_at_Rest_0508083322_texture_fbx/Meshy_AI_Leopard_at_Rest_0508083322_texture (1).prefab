@@ -1,0 +1,120 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &1717497627538650870
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 168.65
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 35.84
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 409.78
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.18957096
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0.11339486
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.6979554
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0.68122154
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: -96.323
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 245.22101
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 919132149155446097, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      propertyPath: m_Name
+      value: Meshy_AI_Leopard_at_Rest_0508083322_texture (1)
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3209068115762147130}
+  m_SourcePrefab: {fileID: 100100000, guid: 3417b2b8ca4f0f842a68c324f7e7b49d, type: 3}
+--- !u!1 &1951377159185058727 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 3417b2b8ca4f0f842a68c324f7e7b49d,
+    type: 3}
+  m_PrefabInstance: {fileID: 1717497627538650870}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3209068115762147130
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1951377159185058727}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdd81d758b91ccc408a0996550d3b340, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animalName: Leopard
+  basePhotoValue: 1000
+  rarity: 3
+  photoItem: {fileID: 11400000, guid: a156d7298e53f084e8c3fc8c5d1df840, type: 2}
+  maxPhotos: 2
+  isRespawnable: 0
+  fleeDistance: 8
+  photosTaken: 0
