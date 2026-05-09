@@ -48,12 +48,13 @@ public class CarController : MonoBehaviour
     // ─────────────────────────────────────────────
 
     [Header("Driving Tuning")]
-    public float driveForce = 4000f;
-    public float turnSpeed = 60f;
-    public float brakeDrag = 8f;
-    public float driveDrag = 0.5f;
-    public float angDrag = 5f;
-    public float maxSpeed = 20f;
+    public float driveForce = 180f;
+    public float turnForce = 500f;   // doesn't matter much if using MoveRotation steering
+    public float turnSpeed = 28f;
+    public float brakeDrag = 6f;
+    public float driveDrag = 2f;
+    public float angDrag = 7f;
+    public float maxSpeed = 4.5f;
     public float enterDistance = 4f;
     public float steeringWheelMaxAngle = 180f;
 
@@ -113,9 +114,10 @@ public class CarController : MonoBehaviour
             return;
         }
 
-        rb.centerOfMass = new Vector3(0f, -0.5f, 0f);
+        rb.centerOfMass = new Vector3(0f, -0.2f, 0f);
         rb.interpolation = RigidbodyInterpolation.Interpolate;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.constraints = RigidbodyConstraints.None;
+        rb.angularDrag = angDrag;
         rb.velocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
@@ -321,6 +323,13 @@ public class CarController : MonoBehaviour
         rb.drag = isBraking ? brakeDrag : driveDrag;
 
         float speed = Vector3.Dot(rb.velocity, transform.forward);
+        Vector3 localVelocity = transform.InverseTransformDirection(rb.velocity);
+
+        // kill sideways sliding
+        localVelocity.x *= 0.2f;
+
+        // rebuild world velocity
+        rb.velocity = transform.TransformDirection(localVelocity);
 
         Debug.Log($"[Drive] force={(transform.forward * throttleInput * driveForce)} | vel={rb.velocity.magnitude}");
 
@@ -339,11 +348,22 @@ public class CarController : MonoBehaviour
             }
         }
 
-        if (Mathf.Abs(speed) > 0.5f)
+        if (Mathf.Abs(speed) > 0.2f)
         {
             float steerDir = Mathf.Sign(speed);
+        
             float turnAmount = steerInput * turnSpeed * steerDir * Time.fixedDeltaTime;
-            rb.MoveRotation(rb.rotation * Quaternion.Euler(0f, turnAmount, 0f));
+        
+            Quaternion targetRotation =
+                rb.rotation * Quaternion.Euler(0f, turnAmount, 0f);
+        
+            rb.MoveRotation(
+                Quaternion.Slerp(
+                    rb.rotation,
+                    targetRotation,
+                    0.8f
+                )
+            );
         }
 
         if (steeringWheel)
