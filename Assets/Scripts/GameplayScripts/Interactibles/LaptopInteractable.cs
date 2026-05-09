@@ -15,6 +15,7 @@ public class LaptopInteractable : Interactable
     public ItemType photoItemType = ItemType.QuestItem;
 
     [Header("Audio")]
+    public AudioClip laptopOpenClip;   // ← add this
     public AudioClip sellSound;
     public AudioSource audioSource;
 
@@ -32,6 +33,7 @@ public class LaptopInteractable : Interactable
 
     public override void Interact(PlayerController player)
     {
+        audioSource?.PlayOneShot(laptopOpenClip);
         SellAllPhotos(player);
     }
 

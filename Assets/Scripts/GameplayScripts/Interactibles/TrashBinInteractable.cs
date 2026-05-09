@@ -1,13 +1,14 @@
-﻿// ── Trash Bin ─────────────────────────────────────────────────────────────────
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TrashBinInteractable : Interactable
 {
     [Header("Trash Bin")]
     public VanSystemsHub vanHub;
-
-    [Tooltip("Van must be stopped to empty trash")]
     public bool requireVanStopped = true;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip emptyTrashClip;
 
     public override string InteractPrompt => "Press E to empty Trash Bin";
 
@@ -21,6 +22,7 @@ public class TrashBinInteractable : Interactable
     public override void Interact(PlayerController player)
     {
         vanHub.EmptyTrash();
+        audioSource?.PlayOneShot(emptyTrashClip);
         Debug.Log("[TrashBin] Trash emptied.");
     }
 }

@@ -52,7 +52,7 @@ Shader "Tutorial/VolumetricFog"
 
             float henyey_greenstein(float angle, float scattering)
             {
-                return (1.0 - angle * angle) / (4.0 * PI * pow(1.0 + scattering * scattering - (2.0 * scattering) * angle, 1.5f));
+                return (1.0 - angle * angle) / (4.0 * PI * pow(abs(1.0 + scattering * scattering - (2.0 * scattering) * angle), 1.5f));
             }
             
             float get_density(float3 worldPos)
@@ -81,7 +81,10 @@ Shader "Tutorial/VolumetricFog"
                 float transmittance = 1;
                 float4 fogCol = _Color;
 
-                while(distTravelled < distLimit)
+                int maxSteps = (int)ceil(_MaxDistance / max(_StepSize, 0.001));
+
+                [loop]
+                for (int i = 0; i < maxSteps && distTravelled < distLimit; i++)
                 {
                     float3 rayPos = entryPoint + rayDir * distTravelled;
                     float density = get_density(rayPos);

@@ -220,7 +220,7 @@ public class HUDManager : MonoBehaviour
         if (interactPromptText != null) interactPromptText.text = prompt;
     }
 
-    void HidePrompt()
+    public void HidePrompt()
     {
         if (interactPromptRoot != null) interactPromptRoot.SetActive(false);
     }

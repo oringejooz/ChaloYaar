@@ -169,6 +169,10 @@ public class PlayerMovementAdvanced : MonoBehaviour
         ApplyGravity();
         UpdateAnimator();
         HandleFootstepAudio();
+
+        // Lock X and Z rotation — only Y axis allowed
+        Vector3 euler = transform.eulerAngles;
+        transform.eulerAngles = new Vector3(0f, euler.y, 0f);
     }
 
     // ── Ground ────────────────────────────────────────────────────────────────

@@ -1,16 +1,16 @@
-﻿// ── Stove ─────────────────────────────────────────────────────────────────────
-using UnityEngine;
+﻿using UnityEngine;
 
 public class StoveInteractable : Interactable
 {
     [Header("Stove")]
     public VanSystemsHub vanHub;
-
-    [Tooltip("Seconds to cook one meal")]
     public float cookTime = 10f;
-
-    [Tooltip("Cooked item to add to player inventory")]
     public ItemData cookedItem;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip cookingLoopClip;   // looping sizzle sound
+    //public AudioClip cookDoneClip;      // ding when meal is ready
 
     private bool _isCooking;
     private float _cookTimer;
@@ -32,18 +32,33 @@ public class StoveInteractable : Interactable
 
     System.Collections.IEnumerator CookRoutine(PlayerController player)
     {
+        // Start looping cooking sound
+        if (audioSource != null && cookingLoopClip != null)
+        {
+            audioSource.clip = cookingLoopClip;
+            //audioSource.loop = true;
+            audioSource.Play();
+        }
+
         while (_cookTimer > 0f)
         {
             _cookTimer -= Time.deltaTime;
             yield return null;
         }
+
+        //// Stop loop, play done sound
+        //if (audioSource != null)
+        //{
+        //    audioSource.loop = false;
+        //    audioSource.Stop();
+        //    audioSource.PlayOneShot(cookDoneClip);
+        //}
+
         _isCooking = false;
         if (cookedItem != null)
         {
             player.Inventory.AddItem(cookedItem, 1);
             Debug.Log($"[Stove] Cooked: {cookedItem.itemName}");
         }
-
-        // Chef perk bonus handled in CharacterPerk.Chef branch of PlayerClass
     }
 }

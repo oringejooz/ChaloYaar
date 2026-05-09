@@ -47,6 +47,10 @@ public class ObjectiveSystem : MonoBehaviour
     [Tooltip("How long after fade before next objective appears")]
     public float nextObjectiveDelay = 0.5f;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip objectiveCompleteClip;
+
     private int _currentIndex = -1;
     private bool _checking = true;
 
@@ -95,7 +99,7 @@ public class ObjectiveSystem : MonoBehaviour
         }
 
         var obj = objectives[_currentIndex];
-        hudManager?.SetObjective($"[ ] {obj.title}\n{obj.description}");
+        hudManager?.SetObjective($"{obj.title}\n{obj.description}");
         OnObjectiveStarted?.Invoke(obj);
         Debug.Log($"[Objectives] Started: {obj.title}");
 
@@ -128,14 +132,12 @@ public class ObjectiveSystem : MonoBehaviour
         OnObjectiveCompleted?.Invoke(obj);
         Debug.Log($"[Objectives] Completed: {obj.title}");
 
-        // Show green completed text
-        hudManager?.SetObjective($"<color=green>✓ {obj.title}</color>");
+        audioSource?.PlayOneShot(objectiveCompleteClip); // ← add
+
+        hudManager?.SetObjective($"<color=green>{obj.title}</color>");
 
         yield return new WaitForSeconds(completedHoldDuration);
-
-        // Fade out
         yield return StartCoroutine(FadeObjectiveText());
-
         yield return new WaitForSeconds(nextObjectiveDelay);
 
         AdvanceToNextObjective();

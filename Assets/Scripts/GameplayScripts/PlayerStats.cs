@@ -40,11 +40,11 @@ public class PlayerStats : MonoBehaviour
 
     // ── Runtime State ─────────────────────────────────────────────────────────
     [Header("Current Values — Runtime")]
-    [SerializeField, ReadOnly] private float _hunger;
-    [SerializeField, ReadOnly] private float _thirst;
-    [SerializeField, ReadOnly] private float _stamina;
-    [SerializeField, ReadOnly] private float _drowsiness;
-    [SerializeField, ReadOnly] private float _health;
+    [SerializeField] private float _hunger;
+    [SerializeField] private float _thirst;
+    [SerializeField] private float _stamina;
+    [SerializeField] private float _drowsiness;
+    [SerializeField] private float _health;
 
     // ── Events ────────────────────────────────────────────────────────────────
     public System.Action<StatType> OnStatDepleted;

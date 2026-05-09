@@ -223,6 +223,9 @@ public class CarController : MonoBehaviour
         if (playerController != null && playerController.interactionSystem != null)
             playerController.interactionSystem.enabled = false;
 
+        // Clear the interaction prompt
+        FindObjectOfType<HUDManager>()?.HidePrompt(); // ← add this
+
         player.SetActive(false);
 
         if (insideCamera != null) insideCamera.gameObject.SetActive(true);
@@ -251,7 +254,7 @@ public class CarController : MonoBehaviour
             // Return player to where they entered
             Transform spawnAt = exitPoint != null ? exitPoint : transform;
             player.transform.position = spawnAt.position;
-            player.transform.rotation = spawnAt.rotation;
+            player.transform.rotation = Quaternion.Euler(0f, spawnAt.rotation.eulerAngles.y, 0f);
 
             player.SetActive(true);
 

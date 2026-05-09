@@ -135,6 +135,7 @@ GameObject:
   - component: {fileID: 231220187}
   - component: {fileID: 231220186}
   - component: {fileID: 231220185}
+  - component: {fileID: 231220188}
   m_Layer: 5
   m_Name: ExitBtn
   m_TagString: Untagged
@@ -243,6 +244,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 231220183}
   m_CullTransparentMesh: 1
+--- !u!114 &231220188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 231220183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dcc1a29e9b2f9043a5b1c131c7cbc6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &282296680
 GameObject:
   m_ObjectHideFlags: 0
@@ -1244,7 +1257,6 @@ GameObject:
   - component: {fileID: 1464075842}
   - component: {fileID: 1464075841}
   - component: {fileID: 1464075840}
-  - component: {fileID: 1464075839}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1252,23 +1264,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1464075839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1464075838}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 58300ab05da12b343b38980850577941, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  hostBtn: {fileID: 1571582330}
-  clientBtn: {fileID: 913794472}
-  serverBtn: {fileID: 662301624}
-  disconnectBtn: {fileID: 0}
-  statusText: {fileID: 0}
 --- !u!114 &1464075840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1602,10 +1597,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1806449790}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 54cc0874079f0c34d800efd563c4c0ae, type: 3}
+  m_Script: {fileID: 11500000, guid: 9fb1bb7606c759241b57d4b0f263c7ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loadButton: {fileID: 1806449792}
   sceneName: TerrainSP
 --- !u!1 &1823471586
 GameObject:
@@ -1826,7 +1820,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1983591565}
-  - component: {fileID: 1983591566}
   m_Layer: 0
   m_Name: GameNetworkManager
   m_TagString: Untagged
@@ -1849,18 +1842,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1983591566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1983591564}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a1c3cb092fde3a44b8ca507399102165, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &2079173869
 GameObject:
   m_ObjectHideFlags: 0

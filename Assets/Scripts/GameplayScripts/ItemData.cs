@@ -36,4 +36,5 @@ public class ItemData : ScriptableObject
     public string consumeAnimTrigger = "Eat";
     [Tooltip("Seconds before stat effect applies (eat animation delay)")]
     public float consumeDelay = 1f;
+    public AudioClip consumeSound; // ← add this
 }

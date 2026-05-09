@@ -1,19 +1,16 @@
-﻿// ── Wrench / Van Repair ───────────────────────────────────────────────────────
-using UnityEngine;
+﻿using UnityEngine;
 
 public class WrenchInteractable : Interactable
 {
     [Header("Wrench")]
     public VanSystemsHub vanHub;
-
-    [Tooltip("Health restored per repair action")]
     public float repairAmount = 25f;
-
-    [Tooltip("Cost in rupees per repair action")]
     public int repairCost = 50;
-
-    [Tooltip("Van must be stopped to repair")]
     public bool requireVanStopped = true;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip repairClip;
 
     public override string InteractPrompt => $"Press E to Repair Van (₹{repairCost})";
 
@@ -27,7 +24,6 @@ public class WrenchInteractable : Interactable
 
     public override void Interact(PlayerController player)
     {
-        // Mechanic perk: 50% cost reduction
         int cost = repairCost;
         if (player.Class.characterData != null)
             foreach (var perk in player.Class.characterData.perks)
@@ -35,6 +31,7 @@ public class WrenchInteractable : Interactable
 
         if (!MoneySystem.Instance.Spend(cost)) return;
         vanHub.RepairVan(repairAmount);
+        audioSource?.PlayOneShot(repairClip);
         Debug.Log($"[Wrench] Van repaired by {repairAmount}. Cost ₹{cost}.");
     }
 }

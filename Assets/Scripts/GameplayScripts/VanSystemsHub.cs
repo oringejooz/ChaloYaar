@@ -148,9 +148,9 @@ public class VanSystemsHub : MonoBehaviour
             fuel.Drain(fuelDrainPerSecond * dt);
 
         // Check alerts (rate-limited)
-        TickAlert(ref _fuelAlertCooldown,   fuel.Normalized   < lowFuelThreshold,   "⛽ Low fuel! Find a filling station.",       lowFuelClip,   dt);
-        TickAlert(ref _healthAlertCooldown, health.Normalized < lowHealthThreshold, "🔧 Van needs repair! Use the wrench.",       lowHealthClip, dt);
-        TickAlert(ref _trashAlertCooldown,  trash.Normalized  > trashFullThreshold, "🗑️ Trash bin is full! Empty it at a stop.", trashFullClip, dt);
+        TickAlert(ref _fuelAlertCooldown,   fuel.Normalized   < lowFuelThreshold,   "Low fuel! Find a filling station.",       lowFuelClip,   dt);
+        TickAlert(ref _healthAlertCooldown, health.Normalized < lowHealthThreshold, "Van needs repair! Use the wrench.",       lowHealthClip, dt);
+        TickAlert(ref _trashAlertCooldown,  trash.Normalized  > trashFullThreshold, "Trash bin is full! Empty it at a stop.", trashFullClip, dt);
     }
 
     void TickAlert(ref float cooldown, bool condition, string message, AudioClip clip, float dt)
@@ -182,7 +182,7 @@ public class VanSystemsHub : MonoBehaviour
     {
         if (water.current < waterPerDrink)
         {
-            OnSystemAlert?.Invoke("💧 Water dispenser empty! Refill at a water station.");
+            OnSystemAlert?.Invoke("Water dispenser empty! Refill at a water station.");
             return false;
         }
         water.Drain(waterPerDrink);

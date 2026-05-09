@@ -32,4 +32,5 @@ MonoBehaviour:
     causesDrowsinessAfterDelay: 0
     delayedDrowsinessAmount: 0
   consumeAnimTrigger: Eat
-  consumeDelay: 1
+  consumeDelay: 0.5
+  consumeSound: {fileID: 8300000, guid: 9da654c8f52f1424691d22d6b91e8956, type: 3}

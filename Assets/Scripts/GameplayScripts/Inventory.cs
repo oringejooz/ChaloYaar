@@ -35,6 +35,9 @@ public class Inventory : MonoBehaviour
     [Header("Capacity")]
     public int maxSlots = 12;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+
     [Header("Starting Items")]
     public List<InventorySlot> startingItems = new List<InventorySlot>();
 
@@ -154,13 +157,18 @@ public class Inventory : MonoBehaviour
 
     System.Collections.IEnumerator ApplyConsumeDelay(ItemData item, PlayerController player)
     {
-        // Play animation
         if (player.Movement.TryGetComponent(out Animator anim) && !string.IsNullOrEmpty(item.consumeAnimTrigger))
             anim.SetTrigger(item.consumeAnimTrigger);
 
         yield return new WaitForSeconds(item.consumeDelay);
 
+        audioSource?.PlayOneShot(item.consumeSound);
         player.Stats.ApplyConsumable(item.effect);
+
+        // Add trash when food is consumed
+        var vanHub = FindObjectOfType<VanSystemsHub>();
+        vanHub?.AddTrash();
+
         Debug.Log($"[Inventory] Consumed: {item.itemName}");
     }
 }
