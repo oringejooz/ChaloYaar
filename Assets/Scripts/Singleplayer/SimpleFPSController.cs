@@ -50,16 +50,8 @@ public class SimpleFPSController : MonoBehaviour
         currentDelta = new Vector2(rawX, rawY);
         smoothDelta = Vector2.Lerp(smoothDelta, currentDelta, 1f - smoothing);
 
-        // ── HEAD YAW (left/right freelook) ──
-        yawOffset += smoothDelta.x;
-        yawOffset = Mathf.Clamp(yawOffset, -maxYaw, maxYaw);
-
-        // if exceeded limit → rotate body instead
-        if (Mathf.Abs(yawOffset) >= maxYaw)
-        {
-            float extra = smoothDelta.x;
-            playerBody.Rotate(Vector3.up * extra);
-        }
+        playerBody.Rotate(Vector3.up * smoothDelta.x);
+        yawOffset = 0f;
 
         // ── HEAD PITCH (up/down) ──
         xRotation -= smoothDelta.y;

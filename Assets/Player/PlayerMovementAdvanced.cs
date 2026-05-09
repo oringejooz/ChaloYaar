@@ -186,7 +186,19 @@ public class PlayerMovementAdvanced : MonoBehaviour
         float x = Input.GetAxisRaw("Horizontal");
         float z = Input.GetAxisRaw("Vertical");
 
-        Vector3 inputDir = (transform.right * x + transform.forward * z).normalized;
+        Transform cam = Camera.main.transform;
+
+        Vector3 forward = cam.forward;
+        Vector3 right = cam.right;
+        
+        // flatten so looking up/down doesn't move vertically
+        forward.y = 0f;
+        right.y = 0f;
+        
+        forward.Normalize();
+        right.Normalize();
+        
+        Vector3 inputDir = (right * x + forward * z).normalized;
 
         _hasInput = inputDir.magnitude > 0.05f;
         _isSprinting = _hasInput && !_isInWater && Input.GetKey(KeyCode.LeftShift);
